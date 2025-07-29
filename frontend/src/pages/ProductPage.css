@@ -1,0 +1,151 @@
+.product-page-container {
+  padding: 32px;
+  background: #f8f9fb;
+  min-height: 100vh;
+}
+
+.add-product-btn {
+  margin-bottom: 18px;
+  display: inline-block;
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  background: #1a2332 !important;
+  color: #fff !important;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 22px;
+  box-shadow: 0 2px 8px rgba(26,35,50,0.08);
+  transition: background 0.2s;
+}
+.add-product-btn:hover {
+  background: #283046 !important;
+  color: #fff !important;
+}
+
+.product-table {
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(26,35,50,0.08);
+  overflow: hidden;
+}
+
+.product-table th {
+  background: #f8f9fb;
+  color: #222;
+  font-weight: bold;
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+.product-table td {
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1rem;
+  color: #222;
+  vertical-align: middle;
+}
+
+.product-table .ant-btn-link {
+  background: #1a2332;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 4px 18px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  transition: background 0.2s;
+  border: none;
+  box-shadow: 0 1px 4px rgba(26,35,50,0.06);
+}
+.product-table .ant-btn-link:hover {
+  background: #283046;
+  color: #fff !important;
+}
+
+.product-table .ant-btn-link[danger] {
+  background: #ff1744;
+  color: #fff !important;
+}
+
+.product-table .ant-btn-link[danger]:hover {
+  background: #d32f2f;
+  color: #fff !important;
+}
+
+.product-table .table-heading {
+  font-weight: 700;
+  color: #222;
+}
+
+@media (max-width: 900px) {
+  .product-page-container {
+    padding: 12px;
+  }
+  .product-table th,
+  .product-table td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+}
+
+/* ProductPage.css */
+.product-page-container {
+  padding: 16px;
+}
+
+.add-product-btn {
+  margin-bottom: 16px;
+}
+
+/* Make the table scrollable on small screens */
+.product-table {
+  overflow-x: auto;
+}
+
+/* Modal form responsiveness */
+.product-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .product-page-container {
+    padding: 8px;
+  }
+
+  .add-product-btn {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .product-table .ant-table {
+    font-size: 12px;
+  }
+
+  .product-form .ant-input,
+  .product-form .ant-input-number {
+    font-size: 14px;
+  }
+}
+/* Default button styling */
+.add-product-btn {
+  margin-bottom: 16px;
+}
+
+/* Make button full width on small screens */
+@media (max-width: 768px) {
+  .add-product-btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+  }
+}

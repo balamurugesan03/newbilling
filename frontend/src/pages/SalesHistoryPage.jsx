@@ -1,0 +1,231 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  DatePicker,
+  Table,
+  Card,
+  Typography,
+  Row,
+  Col,
+  message,
+  Button,
+} from "antd";
+import { useLocation } from "react-router-dom";
+import dayjs from "dayjs";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import "./SalesHistoryPage.css";
+
+const { RangePicker } = DatePicker;
+const { Title } = Typography;
+
+export default function SalesHistoryPage() {
+  const [bills, setBills] = useState([]);
+  const [range, setRange] = useState([
+    dayjs().startOf("day"),
+    dayjs().endOf("day"),
+  ]);
+
+  const location = useLocation();
+
+  const fetchBills = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/bill-history", {
+        params: {
+          start: range[0]?.toISOString(),
+          end: range[1]?.toISOString(),
+        },
+      });
+      setBills(res.data);
+    } catch (err) {
+      message.error("Failed to fetch bills");
+    }
+  };
+
+  useEffect(() => {
+    fetchBills();
+    if (location.state?.reload) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [range, location.state?.reload]);
+
+  const exportToExcel = () => {
+    const data = bills.map((bill) => ({
+      Date: dayjs(bill.createdAt).format("DD/MM/YYYY hh:mm A"),
+      Customer: bill.customerName,
+      Products: bill.items
+        .map(
+          (item) =>
+            `${item.product?.name || item.product} x ${item.qty} = ₹${(
+              item.total || 0
+            ).toFixed(2)} (${item.gstPercent}% GST)`
+        )
+        .join("\n"),
+      Subtotal: bill.subtotal?.toFixed(2),
+      GST: bill.totalGST?.toFixed(2),
+      Total: bill.totalAmount?.toFixed(2),
+      Received: bill.receivedAmount?.toFixed(2),
+      PaymentMode: bill.paymentMode || "-",
+      Balance: (
+        (bill.totalAmount || 0) - (bill.receivedAmount || 0)
+      ).toFixed(2),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "SalesHistory");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(blob, `SalesHistory_${dayjs().format("YYYY-MM-DD")}.xlsx`);
+  };
+
+  const columns = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      render: (text) => dayjs(text).format("DD/MM/YYYY hh:mm A"),
+    },
+    {
+      title: "Customer",
+      dataIndex: "customerName",
+      key: "customerName",
+    },
+    {
+      title: "Products",
+      dataIndex: "items",
+      key: "items",
+      render: (items) =>
+        items.map((item, i) => (
+          <div key={i}>
+            {(item.product?.name || item.product)} x {item.qty} = ₹
+            {(item.total || 0).toFixed(2)} ({item.gstPercent}% GST)
+          </div>
+        )),
+    },
+    {
+      title: "SubTotal",
+      dataIndex: "subtotal",
+      key: "subtotal",
+      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+    },
+    {
+      title: "GST",
+      dataIndex: "totalGST",
+      key: "totalGST",
+      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+    },
+    {
+      title: "Total",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+    },
+    {
+      title: "Received",
+      dataIndex: "receivedAmount",
+      key: "receivedAmount",
+      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+    },
+    {
+      title: "Payment Mode",
+      dataIndex: "paymentMode",
+      key: "paymentMode",
+      render: (val) => val || "-",
+    },
+    {
+      title: "Balance",
+      key: "balanceAmount",
+      render: (_, record) => {
+        const balance =
+          (record.totalAmount || 0) - (record.receivedAmount || 0);
+        return <>₹{balance.toFixed(2)}</>;
+      },
+    },
+  ];
+
+  const dailyTotal = bills.reduce(
+    (acc, bill) => {
+      acc.subtotal += Number(bill.subtotal) || 0;
+      acc.gst += Number(bill.totalGST) || 0;
+      acc.total += Number(bill.totalAmount) || 0;
+      acc.received += Number(bill.receivedAmount) || 0;
+      return acc;
+    },
+    { subtotal: 0, gst: 0, total: 0, received: 0 }
+  );
+
+  const totalBalance = dailyTotal.total - dailyTotal.received;
+
+  return (
+    <div className="sales-history-container">
+      <div
+        className="header-row"
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Title level={3} style={{ margin: 0 }}>
+          Sales History
+        </Title>
+        <Button type="primary" onClick={exportToExcel}>
+          Export to Excel
+        </Button>
+      </div>
+
+      <RangePicker
+        style={{ marginBottom: 24 }}
+        value={range}
+        onChange={(dates) => setRange(dates)}
+      />
+
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={6}>
+          <Card className="summary-card purple">
+            <Title level={5}>Total (without GST)</Title>
+            <Title level={3}>₹{dailyTotal.subtotal.toFixed(2)}</Title>
+            <div className="summary-sub">From selected range</div>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className="summary-card blue">
+            <Title level={5}>Total GST Collected</Title>
+            <Title level={3}>₹{dailyTotal.gst.toFixed(2)}</Title>
+            <div className="summary-sub">GST in range</div>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className="summary-card green">
+            <Title level={5}>Grand Total</Title>
+            <Title level={3}>₹{dailyTotal.total.toFixed(2)}</Title>
+            <div className="summary-sub">Incl. GST</div>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card className="summary-card orange">
+            <Title level={5}>Balance Amount</Title>
+            <Title level={3}>₹{totalBalance.toFixed(2)}</Title>
+            <div className="summary-sub">Outstanding</div>
+          </Card>
+        </Col>
+      </Row>
+
+      <div style={{ overflowX: "auto" }}>
+        <Table
+          columns={columns}
+          dataSource={bills}
+          rowKey="_id"
+          pagination={{ pageSize: 4 }}
+          scroll={{ x: "max-content" }}
+          className="product-table"
+        />
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css?family=Rajdhani:400,700&display=swap');
+
+.billing-page-container {
+  padding: 32px;
+  background: #f8f9fb;
+  min-height: 100vh;
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+}
+
+.ant-card {
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(26,35,50,0.08);
+  background: #fff;
+}
+
+.ant-card-head {
+  background: #f8f9fb;
+  border-radius: 14px 14px 0 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 600;
+  color: #1a2332;
+  letter-spacing: 0.5px;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-select-selector {
+  border-radius: 8px !important;
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+}
+
+.add-item-btn {
+  background: #1a2332 !important;
+  color: #fff !important;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 22px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(26,35,50,0.08);
+  transition: background 0.2s;
+}
+.add-item-btn:hover {
+  background: #283046 !important;
+  color: #fff !important;
+}
+
+.billing-table {
+  font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+  width: 100%;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(26,35,50,0.08);
+  overflow: hidden;
+}
+
+.billing-table th {
+  background: #f8f9fb;
+  color: #222;
+  font-weight: bold;
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+.billing-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1rem;
+  color: #222;
+  vertical-align: middle;
+}
+
+.save-bill-btn {
+  background: #1a2332 !important;
+  color: #fff !important;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 22px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(26,35,50,0.08);
+  transition: background 0.2s;
+}
+.save-bill-btn:hover {
+  background: #283046 !important;
+  color: #fff !important;
+}
+
+@media (max-width: 900px) {
+  .billing-page-container {
+    padding: 12px;
+  }
+  .billing-table th,
+  .billing-table td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+}
+
+/* BillingPage.css */
+
+.billing-page-container {
+  padding: 16px;
+  max-width: 100%;
+}
+
+.add-item-btn,
+.save-bill-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .billing-page-container {
+    padding: 8px;
+  }
+
+  .ant-form-inline .ant-form-item {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .ant-select,
+  .ant-input-number,
+  .ant-input {
+    width: 100% !important;
+  }
+
+  .ant-form-item-label {
+    text-align: left;
+  }
+
+  .billing-table th,
+  .billing-table td {
+    font-size: 12px;
+  }
+
+  .ant-card {
+    padding: 12px;
+  }
+
+  .ant-btn {
+    width: 100%;
+  }
+
+  .ant-form-item {
+    width: 100%;
+  }
+}
+.billing-page-container {
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.save-bill-btn {
+  position: sticky;
+  bottom: 10px;
+  z-index: 10;
+}
+.save-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* reduce value to move up more */
+  margin-bottom: 16px;
+}
