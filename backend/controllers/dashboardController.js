@@ -2,21 +2,39 @@ const Bill = require("../models/Bill");
 
 exports.getTodayDashboard = async (req, res) => {
   try {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
+    // === Today Range ===
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
 
-    const bills = await Bill.find({
-      createdAt: { $gte: start, $lte: end },
+    // === Month Range ===
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const monthEnd = new Date();
+    monthEnd.setMonth(monthEnd.getMonth() + 1);
+    monthEnd.setDate(0);
+    monthEnd.setHours(23, 59, 59, 999);
+
+    // === Today Bills ===
+    const todayBills = await Bill.find({
+      createdAt: { $gte: todayStart, $lte: todayEnd },
     });
 
+    // === Month Bills ===
+    const monthBills = await Bill.find({
+      createdAt: { $gte: monthStart, $lte: monthEnd },
+    });
+
+    // === Today Totals ===
     let totalSales = 0;
     let totalGST = 0;
     const productSales = {};
 
-    bills.forEach((bill) => {
+    todayBills.forEach((bill) => {
       totalSales += bill.totalAmount;
       totalGST += bill.totalGST;
 
@@ -32,12 +50,25 @@ exports.getTodayDashboard = async (req, res) => {
       });
     });
 
+    // === Monthly Totals ===
+    let monthlySales = 0;
+    let monthlyGST = 0;
+
+    monthBills.forEach((bill) => {
+      monthlySales += bill.totalAmount;
+      monthlyGST += bill.totalGST;
+    });
+
     res.json({
       totalSales,
       totalGST,
       totalWithoutGST: totalSales - totalGST,
       productSales,
+      monthlySales,
+      monthlyGST,
+      monthlyWithoutGST: monthlySales - monthlyGST,
     });
+
   } catch (err) {
     res.status(500).json({ msg: "Dashboard fetch failed", error: err.message });
   }
