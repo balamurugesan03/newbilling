@@ -1,4 +1,5 @@
 const Bill = require("../models/Bill");
+const { Op } = require('sequelize');
 
 exports.getTodayDashboard = async (req, res) => {
   try {
@@ -20,13 +21,23 @@ exports.getTodayDashboard = async (req, res) => {
     monthEnd.setHours(23, 59, 59, 999);
 
     // === Today Bills ===
-    const todayBills = await Bill.find({
-      createdAt: { $gte: todayStart, $lte: todayEnd },
+    const todayBills = await Bill.findAll({
+      where: {
+        createdAt: {
+          [Op.gte]: todayStart,
+          [Op.lte]: todayEnd,
+        }
+      }
     });
 
     // === Month Bills ===
-    const monthBills = await Bill.find({
-      createdAt: { $gte: monthStart, $lte: monthEnd },
+    const monthBills = await Bill.findAll({
+      where: {
+        createdAt: {
+          [Op.gte]: monthStart,
+          [Op.lte]: monthEnd,
+        }
+      }
     });
 
     // === Today Totals ===

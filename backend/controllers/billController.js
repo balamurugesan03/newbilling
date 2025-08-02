@@ -1,4 +1,5 @@
 const Bill = require("../models/Bill");
+const { Op } = require('sequelize');
 
 exports.createBill = async (req, res) => {
   try {
@@ -21,7 +22,7 @@ exports.createBill = async (req, res) => {
 
 exports.getBills = async (req, res) => {
   try {
-    const bills = await Bill.find().sort({ createdAt: -1 });
+    const bills = await Bill.findAll({ order: [['createdAt', 'DESC']] });
     res.json(bills);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -39,10 +40,15 @@ exports.getMonthlyCreditReport = async (req, res) => {
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 0, 23, 59, 59);
 
-    const bills = await Bill.find({
-      isCredit: true,
-      isPaid: false,
-      date: { $gte: start, $lte: end },
+    const bills = await Bill.findAll({
+      where: {
+        isCredit: true,
+        isPaid: false,
+        date: {
+          [Op.gte]: start,
+          [Op.lte]: end,
+        }
+      }
     });
 
     res.json(bills);
@@ -53,9 +59,11 @@ exports.getMonthlyCreditReport = async (req, res) => {
 
 exports.markBillAsPaid = async (req, res) => {
   try {
-    await Bill.findByIdAndUpdate(req.params.id, {
+    await Bill.update({
       isPaid: true,
       paidDate: new Date(),
+    }, {
+      where: { id: req.params.id }
     });
     res.json({ success: true, message: "Bill marked as paid" });
   } catch (err) {

@@ -1,22 +1,25 @@
-// models/purchaseInvoice.js
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const itemSchema = new mongoose.Schema({
-  itemCode: String,
-  productName: String,
-  hsnSac: String,
-  quantity: Number,
-  rate: Number,
-  discount: Number,
-  total: Number,
+const PurchaseInvoice = sequelize.define('PurchaseInvoice', {
+  invoiceNumber: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  supplierName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  purchaseDate: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  totalAmount: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  }
+}, {
+  timestamps: true
 });
 
-const purchaseInvoiceSchema = new mongoose.Schema({
-  invoiceNumber: String,
-  supplierName: String,
-  purchaseDate: Date,
-  items: [itemSchema],
-  totalAmount: Number,
-}, { timestamps: true });
-
-module.exports = mongoose.model('PurchaseInvoice', purchaseInvoiceSchema);
+module.exports = PurchaseInvoice;

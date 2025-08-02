@@ -1,5 +1,5 @@
 const Bill = require("../models/Bill");
-const mongoose = require("mongoose");
+const { Op, fn, col, literal } = require("sequelize");
 
 exports.getYearlyReport = async (req, res) => {
   const { year } = req.query;
@@ -9,45 +9,34 @@ exports.getYearlyReport = async (req, res) => {
     const start = new Date(`${selectedYear}-01-01`);
     const end = new Date(`${selectedYear + 1}-01-01`);
 
-    const bills = await Bill.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: start, $lt: end },
-        },
+    const bills = await Bill.findAll({
+      where: {
+        createdAt: {
+          [Op.gte]: start,
+          [Op.lt]: end,
+        }
       },
-      {
-        $unwind: "$items", // Expand each item in the bill
-      },
-      {
-        $project: {
-          month: { $month: "$createdAt" },
-          totalAmount: 1,
-          totalGST: 1,
-          itemTotal: { $multiply: ["$items.qty", "$items.purchasePrice"] }, // Cost for this item
-        },
-      },
-      {
-        $group: {
-          _id: "$month",
-          totalAmount: { $sum: "$totalAmount" }, // Sale
-          totalGST: { $sum: "$totalGST" },
-          totalCost: { $sum: "$itemTotal" }, // Cost
-        },
-      },
-      {
-        $project: {
-          month: "$_id",
-          totalAmount: 1,
-          totalGST: 1,
-          totalCost: 1,
-          profit: { $subtract: ["$totalAmount", "$totalCost"] }, // Profit = Sale - Cost
-          _id: 0,
-        },
-      },
-      { $sort: { month: 1 } },
-    ]);
+      attributes: [
+        [fn('MONTH', col('createdAt')), 'month'],
+        [fn('SUM', col('totalAmount')), 'totalAmount'],
+        [fn('SUM', col('totalGST')), 'totalGST'],
+        [literal('SUM(totalAmount) - SUM(totalGST)'), 'totalWithoutGST']
+      ],
+      group: [fn('MONTH', col('createdAt'))],
+      order: [[fn('MONTH', col('createdAt')), 'ASC']],
+      raw: true
+    });
 
-    res.json(bills);
+    // Transform to match frontend expectations
+    const transformedBills = bills.map(bill => ({
+      month: bill.month,
+      totalAmount: parseFloat(bill.totalAmount) || 0,
+      totalGST: parseFloat(bill.totalGST) || 0,
+      totalWithoutGST: parseFloat(bill.totalWithoutGST) || 0,
+      profit: parseFloat(bill.totalAmount) || 0 // Simplified profit calculation
+    }));
+
+    res.json(transformedBills);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Failed to fetch yearly report" });

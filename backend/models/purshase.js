@@ -1,24 +1,27 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const purchaseSchema = new mongoose.Schema({
-  type: String,
-  group: String,
-  brand: String,
-  itemCode: String,
-  productName: String,
-  unit: String,
-  openingStock: Number,
-  openingStockValue: Number,
-  purchasePrice: Number,
-  salePrice: Number,
-  minSalePrice: Number,
-  mrp: Number,
-  hsnSac: String,
-  gstRate: Number,
-  saleDiscount: Number,
-  reorderLevel: Number,
-  productionDate: String,
-  expiryDate: String
-}, { timestamps: true });
+const Purchase = sequelize.define('Purchase', {
+  type: DataTypes.STRING,
+  group: DataTypes.STRING,
+  brand: DataTypes.STRING,
+  itemCode: DataTypes.STRING,
+  productName: DataTypes.STRING,
+  unit: DataTypes.STRING,
+  openingStock: DataTypes.FLOAT,
+  openingStockValue: DataTypes.FLOAT,
+  purchasePrice: DataTypes.FLOAT,
+  salePrice: DataTypes.FLOAT,
+  minSalePrice: DataTypes.FLOAT,
+  mrp: DataTypes.FLOAT,
+  hsnSac: DataTypes.STRING,
+  gstRate: DataTypes.FLOAT,
+  saleDiscount: DataTypes.FLOAT,
+  reorderLevel: DataTypes.FLOAT,
+  productionDate: DataTypes.STRING,
+  expiryDate: DataTypes.STRING
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Purchase', purchaseSchema);
+module.exports = Purchase;

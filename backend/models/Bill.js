@@ -1,36 +1,58 @@
 
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const mongoose = require("mongoose");
-
-const billSchema = new mongoose.Schema({
-  customerName: { type: String, required: true },
-  date: { type: Date, default: Date.now },
-
-  items: [
-    {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" }, // optional
-      product: String,
-      qty: Number,
-      rate: Number,
-      gstPercent: Number,
-      gstApplicable: Boolean,
-      gstAmount: Number,
-      total: Number,
-    },
-  ],
-
-  subtotal: Number,
-  totalGST: Number,
-  totalAmount: Number,
-
-    receivedAmount: { type: Number, default: 0 },   // NEW
-  balanceAmount: { type: Number, default: 0 },  
-  paymentMode: { type: String, enum: ["Cash", "Paytm", "UPI", "Card", "credit"], default: "Cash" }, // ✅ New Field
-  // credit related fields
-  isCredit: { type: Boolean, default: false },
-  isPaid: { type: Boolean, default: true }, // credit → false
-  paidDate: Date,
-   createdAt: { type: Date, default: Date.now }
+const Bill = sequelize.define('Bill', {
+  customerName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  date: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  items: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  subtotal: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  totalGST: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  totalAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  receivedAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0
+  },
+  balanceAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0
+  },
+  paymentMode: {
+    type: DataTypes.ENUM('Cash', 'Paytm', 'UPI', 'Card', 'credit'),
+    defaultValue: 'Cash'
+  },
+  isCredit: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  isPaid: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  paidDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  }
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model("Bill", billSchema);
+module.exports = Bill;

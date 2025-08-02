@@ -1,56 +1,55 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const itemSchema = new mongoose.Schema({
+const Item = sequelize.define('Item', {
   itemCode: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
   },
   hsCode: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: true
   },
   barcode: {
-    type: String,
+    type: DataTypes.STRING,
     unique: true,
-    sparse: true,
+    allowNull: true
   },
   name: {
-    type: String,
-    required: true,
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false
   },
   mrp: {
-    type: Number,
-    required: true,
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
   },
   purchaseRate: {
-    type: Number,
-    required: true,
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
   },
-    unitPrice: {
-    type: Number,
-    required: true,
+  unitPrice: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
   },
   gstPercent: {
-    type: Number,
-    required: true,
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: false
   },
   gstApplicable: {
-    type: Boolean,
-    default: false,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   },
   stockCount: {
-    type: Number,
-    default: 0,
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   },
-    discount: {
-    type: Number,
-    default: 0,
+  discount: {
+    type: DataTypes.DECIMAL(5, 2),
+    defaultValue: 0
   }
 }, {
-  timestamps: true,
+  timestamps: true
 });
 
-module.exports = mongoose.model('Item', itemSchema);
+module.exports = Item;

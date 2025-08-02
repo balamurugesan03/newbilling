@@ -42,7 +42,7 @@ exports.createProduct = async (req, res) => {
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.findAll({ order: [['createdAt', 'DESC']] });
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -52,7 +52,8 @@ exports.getAllProducts = async (req, res) => {
 // Update a product
 exports.updateProduct = async (req, res) => {
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    await Product.update(req.body, { where: { id: req.params.id } });
+    const updated = await Product.findByPk(req.params.id);
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -62,7 +63,7 @@ exports.updateProduct = async (req, res) => {
 // Delete a product
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
+    await Product.destroy({ where: { id: req.params.id } });
     res.json({ message: "Deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -74,7 +75,7 @@ exports.reduceStock = async (req, res) => {
   try {
     const { productId, quantitySold } = req.body;
 
-    const product = await Product.findById(productId);
+    const product = await Product.findByPk(productId);
 
     if (!product) return res.status(404).json({ error: "Product not found" });
 
