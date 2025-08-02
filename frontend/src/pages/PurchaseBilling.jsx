@@ -10,8 +10,6 @@ import {
   Typography,
 } from 'antd';
 import axios from 'axios';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -25,7 +23,7 @@ const PurchaseBilling = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/purchases');
+        const res = await axios.get('http://localhost:5001/api/purchases');
         setProducts(res.data);
       } catch (err) {
         console.error(err);
@@ -71,59 +69,45 @@ const PurchaseBilling = () => {
     form.resetFields();
   };
 
-  const handleSaveInvoice = async () => {
-    if (!supplierName) {
-      return message.warning('Please enter supplier name');
-    }
-
+  const handleSave = async () => {
     if (cartItems.length === 0) {
       return message.warning('Cart is empty');
     }
 
-    const invoiceData = {
-      invoiceNumber: `INV${Date.now()}`,
-      supplierName,
-      purchaseDate: new Date(),
-      items: cartItems,
-      totalAmount: cartItems.reduce((sum, item) => sum + item.total, 0),
-    };
-
     try {
-      // 1. Save to backend
-      await axios.post('http://localhost:5000/api/invoices/add', invoiceData);
-      message.success('Invoice saved!');
+      // Save each cart item as a separate purchase record
+      const savePromises = cartItems.map(async (item) => {
+        const purchaseData = {
+          type: 'General',
+          group: 'Purchase',
+          brand: supplierName || 'Unknown',
+          itemCode: item.itemCode,
+          productName: item.productName,
+          unit: 'Unit',
+          openingStock: item.quantity,
+          openingStockValue: item.total,
+          purchasePrice: item.rate,
+          salePrice: item.rate * 1.2, // 20% markup
+          minSalePrice: item.rate * 1.1, // 10% markup
+          mrp: item.rate * 1.3, // 30% markup
+          hsnSac: item.hsnSac || '',
+          gstRate: 18, // Default GST rate
+          saleDiscount: 0,
+          reorderLevel: 10
+        };
 
-      // 2. Export to Excel
-      const excelData = cartItems.map(item => ({
-        'Product Name': item.productName,
-        'HSN Code': item.hsnSac,
-        Quantity: item.quantity,
-        Rate: item.rate,
-        Discount: item.discount,
-        Total: item.total.toFixed(2),
-      }));
+        return axios.post('http://localhost:5001/api/purchases/add', purchaseData);
+      });
 
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Purchase Invoice');
-
-      // Add total row
-      XLSX.utils.sheet_add_aoa(
-        worksheet,
-        [[``, ``, ``, ``, 'Grand Total', invoiceData.totalAmount.toFixed(2)]],
-        { origin: -1 }
-      );
-
-      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-      const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      saveAs(file, `${invoiceData.invoiceNumber}.xlsx`);
-
-      // 3. Reset
+      await Promise.all(savePromises);
+      message.success(`${cartItems.length} purchase records saved successfully!`);
+      
+      // Reset form
       setCartItems([]);
       setSupplierName('');
     } catch (err) {
       console.error(err);
-      message.error('Error saving invoice');
+      message.error('Error saving purchase records');
     }
   };
 
@@ -184,8 +168,8 @@ const PurchaseBilling = () => {
         <Title level={4} style={{ color: 'white' }}>
           Grand Total: ₹{cartItems.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
         </Title>
-        <Button type="primary" onClick={handleSaveInvoice}>
-          Save Invoice & Download Excel
+        <Button type="primary" onClick={handleSave}>
+          Save
         </Button>
       </div>
     </div>

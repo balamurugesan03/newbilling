@@ -66,7 +66,7 @@ export default function BillingPage() {
   };
 
   const handleAddItem = (values) => {
-    const product = products.find((p) => p._id === values.productId);
+    const product = products.find((p) => p.id === values.productId);
     const quantity = values.quantity;
 
     if (!product) {
@@ -91,7 +91,7 @@ export default function BillingPage() {
       quantity,
       gstAmount,
       total,
-      key: `${product._id}-${Date.now()}-${Math.random()}`,
+      key: `${product.id}-${Date.now()}-${Math.random()}`,
     };
 
     setItems([...items, itemWithKey]);
@@ -115,7 +115,7 @@ export default function BillingPage() {
     const payload = {
       customerName: customerName || "Walk-in",
       items: items.map((i) => ({
-        productId: i._id,
+        productId: i.id,
         name: i.name,
         quantity: i.quantity,
         unitPrice: i.unitPrice,
@@ -140,7 +140,7 @@ export default function BillingPage() {
       message.success("Bill saved!");
 
       for (const item of items) {
-        await reduceProductStock(item._id, item.quantity);
+        await reduceProductStock(item.id, item.quantity);
       }
 
       setPrintData(payload);
@@ -216,7 +216,7 @@ export default function BillingPage() {
                   quantity,
                   gstAmount,
                   total,
-                  key: `${product._id}-${Date.now()}-${Math.random()}`,
+                  key: `${product.id}-${Date.now()}-${Math.random()}`,
                 };
                 setItems((prev) => [...prev, itemWithKey]);
                 e.target.value = "";
@@ -268,7 +268,7 @@ export default function BillingPage() {
               }
             >
               {products.map((p) => (
-                <Select.Option key={p._id} value={p._id}>
+                <Select.Option key={p.id} value={p.id}>
                   {p.name} (Stock: {p.stockCount})
                 </Select.Option>
               ))}

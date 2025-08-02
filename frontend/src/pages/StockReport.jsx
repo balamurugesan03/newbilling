@@ -52,7 +52,7 @@ const StockReport = () => {
       <Table
         columns={columns}
         dataSource={filteredProducts}
-        rowKey="_id"
+        rowKey="id"
         bordered
         pagination={{ pageSize: 5}}
       />

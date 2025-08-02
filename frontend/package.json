@@ -12,6 +12,7 @@
   "dependencies": {
     "antd": "^5.26.6",
     "axios": "^1.11.0",
+    "backend": "file:../backend",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",

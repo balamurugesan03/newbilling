@@ -35,7 +35,7 @@ export default function CreditReport() {
       // Update only that record in state
       setBills(prevBills =>
         prevBills.map(bill =>
-          bill._id === id ? { ...bill, isPaid: true } : bill
+          bill.id === id ? { ...bill, isPaid: true } : bill
         )
       );
     } catch (err) {
@@ -85,7 +85,7 @@ export default function CreditReport() {
       title: "Action",
       render: (_, record) =>
         record.isPaid ? null : (
-          <Button type="link" onClick={() => markPaid(record._id)}>Mark Paid</Button>
+          <Button type="link" onClick={() => markPaid(record.id)}>Mark Paid</Button>
         ),
     },
     {
@@ -115,7 +115,7 @@ export default function CreditReport() {
         <Table
           columns={columns}
           dataSource={bills}
-          rowKey="_id"
+          rowKey="id"
           pagination={{ pageSize: 6 }}
           style={{ minWidth: "600px" }}
         />

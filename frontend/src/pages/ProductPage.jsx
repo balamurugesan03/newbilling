@@ -42,7 +42,7 @@ export default function ProductPage() {
       }
 
       if (editingProduct) {
-        await axios.put(`http://localhost:5000/api/products/${editingProduct._id}`, values);
+        await axios.put(`http://localhost:5000/api/products/${editingProduct.id}`, values);
         message.success("Product updated");
       } else {
         await axios.post("http://localhost:5000/api/products", values);
@@ -86,7 +86,7 @@ export default function ProductPage() {
       <Table
         className="product-table"
         dataSource={products}
-        rowKey="_id"
+        rowKey="id"
         pagination={{ pageSize: 6 }}
         scroll={{ x: 1000 }}
         columns={[
@@ -109,7 +109,7 @@ export default function ProductPage() {
             render: (_, record) => (
               <div style={{ display: "flex", gap: "8px" }}>
                 <Button onClick={() => handleEdit(record)} type="link">Edit</Button>
-                <Button onClick={() => handleDelete(record._id)} type="link" danger>Delete</Button>
+                <Button onClick={() => handleDelete(record.id)} type="link" danger>Delete</Button>
               </div>
             )
           }

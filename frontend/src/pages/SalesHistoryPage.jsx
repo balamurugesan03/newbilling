@@ -30,7 +30,7 @@ export default function SalesHistoryPage() {
 
   const fetchBills = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/bill-history", {
+      const res = await axios.get("http://localhost:5001/api/bill-history", {
         params: {
           start: range[0]?.toISOString(),
           end: range[1]?.toISOString(),
@@ -56,18 +56,18 @@ export default function SalesHistoryPage() {
       Products: bill.items
         .map(
           (item) =>
-            `${item.product?.name || item.product} x ${item.qty} = ₹${(
+            `${item.name || 'Unknown Product'} x ${item.quantity} = ₹${(
               item.total || 0
             ).toFixed(2)} (${item.gstPercent}% GST)`
         )
         .join("\n"),
-      Subtotal: bill.subtotal?.toFixed(2),
-      GST: bill.totalGST?.toFixed(2),
-      Total: bill.totalAmount?.toFixed(2),
-      Received: bill.receivedAmount?.toFixed(2),
+      Subtotal: Number(bill.subtotal || 0).toFixed(2),
+      GST: Number(bill.totalGST || 0).toFixed(2),
+      Total: Number(bill.totalAmount || 0).toFixed(2),
+      Received: Number(bill.receivedAmount || 0).toFixed(2),
       PaymentMode: bill.paymentMode || "-",
       Balance: (
-        (bill.totalAmount || 0) - (bill.receivedAmount || 0)
+        (Number(bill.totalAmount) || 0) - (Number(bill.receivedAmount) || 0)
       ).toFixed(2),
     }));
 
@@ -106,8 +106,8 @@ export default function SalesHistoryPage() {
       render: (items) =>
         items.map((item, i) => (
           <div key={i}>
-            {(item.product?.name || item.product)} x {item.qty} = ₹
-            {(item.total || 0).toFixed(2)} ({item.gstPercent}% GST)
+            {item.name || 'Unknown Product'} x {item.quantity} = ₹
+            {(Number(item.total) || 0).toFixed(2)} ({item.gstPercent}% GST)
           </div>
         )),
     },
@@ -115,25 +115,25 @@ export default function SalesHistoryPage() {
       title: "SubTotal",
       dataIndex: "subtotal",
       key: "subtotal",
-      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+      render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "GST",
       dataIndex: "totalGST",
       key: "totalGST",
-      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+      render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Total",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+      render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Received",
       dataIndex: "receivedAmount",
       key: "receivedAmount",
-      render: (val) => <>₹{(val || 0).toFixed(2)}</>,
+      render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Payment Mode",
@@ -146,7 +146,7 @@ export default function SalesHistoryPage() {
       key: "balanceAmount",
       render: (_, record) => {
         const balance =
-          (record.totalAmount || 0) - (record.receivedAmount || 0);
+          (Number(record.totalAmount) || 0) - (Number(record.receivedAmount) || 0);
         return <>₹{balance.toFixed(2)}</>;
       },
     },
@@ -189,28 +189,28 @@ export default function SalesHistoryPage() {
         <Col span={6}>
           <Card className="summary-card purple">
             <Title level={5}>Total (without GST)</Title>
-            <Title level={3}>₹{dailyTotal.subtotal.toFixed(2)}</Title>
+            <Title level={3}>₹{Number(dailyTotal.subtotal).toFixed(2)}</Title>
             <div className="summary-sub">From selected range</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card className="summary-card blue">
             <Title level={5}>Total GST Collected</Title>
-            <Title level={3}>₹{dailyTotal.gst.toFixed(2)}</Title>
+            <Title level={3}>₹{Number(dailyTotal.gst).toFixed(2)}</Title>
             <div className="summary-sub">GST in range</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card className="summary-card green">
             <Title level={5}>Grand Total</Title>
-            <Title level={3}>₹{dailyTotal.total.toFixed(2)}</Title>
+            <Title level={3}>₹{Number(dailyTotal.total).toFixed(2)}</Title>
             <div className="summary-sub">Incl. GST</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card className="summary-card orange">
             <Title level={5}>Balance Amount</Title>
-            <Title level={3}>₹{totalBalance.toFixed(2)}</Title>
+            <Title level={3}>₹{Number(totalBalance).toFixed(2)}</Title>
             <div className="summary-sub">Outstanding</div>
           </Card>
         </Col>
@@ -220,7 +220,7 @@ export default function SalesHistoryPage() {
         <Table
           columns={columns}
           dataSource={bills}
-          rowKey="_id"
+          rowKey="id"
           pagination={{ pageSize: 4 }}
           scroll={{ x: "max-content" }}
           className="product-table"

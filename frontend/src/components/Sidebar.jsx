@@ -72,6 +72,9 @@ function Sidebar() {
       <Menu.Item key="/stock-report" icon={<CreditCardOutlined />}>
         <Link to="/stock-report">stock</Link>
       </Menu.Item>
+      <Menu.Item key="/purchase-reports" icon={<BarChartOutlined />}>
+        <Link to="/purchase-reports">Purchase Reports</Link>
+      </Menu.Item>
       <Menu.Item key="/logout" icon={<LogoutOutlined />} onClick={handleLogout}>
         Logout
       </Menu.Item>

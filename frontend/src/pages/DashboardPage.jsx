@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/dashboard/today");
+      const res = await axios.get("http://localhost:5001/api/dashboard/today");
       setData(res.data);
     } catch (err) {
       console.error("Failed to load dashboard", err);
@@ -50,17 +50,17 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} className="summary-row">
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card total-card" title="Total Sales (with GST)">
-            ₹{(data?.totalSales || 0).toFixed(2)}
+            ₹{(Number(data?.totalSales) || 0).toFixed(2)}
           </Card>
         </Col>
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card avg-card" title="Total Sales (without GST)">
-            ₹{(data?.totalWithoutGST || 0).toFixed(2)}
+            ₹{(Number(data?.totalWithoutGST) || 0).toFixed(2)}
           </Card>
         </Col>
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card gst-card" title="Total GST Collected">
-            ₹{(data?.totalGST || 0).toFixed(2)}
+            ₹{(Number(data?.totalGST) || 0).toFixed(2)}
           </Card>
         </Col>
       </Row>
@@ -72,17 +72,17 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} className="summary-row">
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card total-card" title="Monthly Sales (with GST)">
-            ₹{(data?.monthlySales || 0).toFixed(2)}
+            ₹{(Number(data?.monthlySales) || 0).toFixed(2)}
           </Card>
         </Col>
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card avg-card" title="Monthly Sales (without GST)">
-            ₹{(data?.monthlyWithoutGST || 0).toFixed(2)}
+            ₹{(Number(data?.monthlyWithoutGST) || 0).toFixed(2)}
           </Card>
         </Col>
         <Col xs={24} sm={24} md={8}>
           <Card className="summary-card gst-card" title="Monthly GST Collected">
-            ₹{(data?.monthlyGST || 0).toFixed(2)}
+            ₹{(Number(data?.monthlyGST) || 0).toFixed(2)}
           </Card>
         </Col>
       </Row>

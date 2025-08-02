@@ -13,6 +13,7 @@ import CreditReport from './pages/CreditReport';
 import StockReport from './pages/StockReport';
 import PurchaseTable from './pages/PurchaseTable';
 import PurchaseBilling from './pages/PurchaseBilling';
+import PurchaseReports from './pages/PurchaseReports';
 
 import bgImage from './assets/bgimage.jpg';
 import './App.css';
@@ -51,6 +52,7 @@ function AppWrapper() {
             <Route path="/purchase-billing" element={<PrivateRoute><PurchaseBilling /></PrivateRoute>} />
             <Route path="/stock-report" element={<PrivateRoute><StockReport /></PrivateRoute>} />
             <Route path="/credit-report" element={<PrivateRoute><CreditReport /></PrivateRoute>} />
+            <Route path="/purchase-reports" element={<PrivateRoute><PurchaseReports /></PrivateRoute>} />
           </Routes>
         </div>
       </div>
