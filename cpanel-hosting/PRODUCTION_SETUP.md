@@ -2,17 +2,19 @@
 
 ## Backend API Configuration
 
-### 1. Database Setup (IMPORTANT - UPDATE REQUIRED)
-Update the following values in `api/.env`:
+### 1. Database Setup ✅ CONFIGURED
+The database credentials are already configured in `api/.env`:
 
 ```env
-# Database Configuration - UPDATE THESE VALUES
-DB_HOST=localhost                     # Usually localhost for cPanel
-DB_PORT=3306                         # Standard MySQL port
-DB_DATABASE=delightr_billing         # Your actual cPanel database name
-DB_USERNAME=delightr_billing_user    # Your actual cPanel database username  
-DB_PASSWORD=your_secure_database_password  # Your actual database password
+# Database Configuration - PRODUCTION READY
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=delightregister_bill1
+DB_USERNAME=delightregister_biller1
+DB_PASSWORD==nFM,lEyhPPc!4WF
 ```
+
+**Server Path**: `/home/delightregister/public_html/billing1.delightregister.online/`
 
 ### 2. Security Configuration
 - JWT Secret is already set to a strong key
@@ -29,13 +31,19 @@ Frontend is already configured to use:
 
 ## Deployment Checklist
 
-### Before Going Live:
-1. ✅ Update database credentials in `api/.env`
-2. ✅ Verify domain points to your hosting
-3. ✅ Upload files to cPanel File Manager
-4. ✅ Set up database in cPanel MySQL Databases
-5. ✅ Test API endpoints work
-6. ✅ Test frontend connects to API
+### Ready for Deployment:
+1. ✅ Database credentials configured (`delightregister_bill1`)
+2. ✅ Frontend configured for production API
+3. ✅ CORS properly set for billing1.delightregister.online
+4. ✅ Environment variables set to production mode
+5. ✅ JWT security configured
+6. ✅ File structure ready for upload
+
+### Upload Instructions:
+1. Upload all files from `cpanel-hosting/` directory to:
+   `/home/delightregister/public_html/billing1.delightregister.online/`
+2. Ensure database `delightregister_bill1` exists in cPanel
+3. Test the application at https://billing1.delightregister.online/
 
 ### File Structure:
 ```
