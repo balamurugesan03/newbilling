@@ -26,23 +26,10 @@ JWT::init();
 // Start session
 session_start();
 
-// Set CORS headers for production frontend
-$allowedOrigins = [
-    'https://billing1.delightregister.online',
-    'http://localhost:3000', // For development
-    'http://localhost:5173'  // For Vite dev server
-];
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
-} else {
-    header('Access-Control-Allow-Origin: https://billing1.delightregister.online');
-}
-
+// Set CORS headers
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 // Handle preflight requests

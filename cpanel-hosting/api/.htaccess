@@ -1,21 +1,15 @@
 RewriteEngine On
 
-# Route all API requests to index.php
+# Handle CORS preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Route all API requests through index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
-# CORS Headers - Allow specific origins for security
-Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-Header always set Access-Control-Allow-Credentials "true"
-
-# Note: CORS origin is dynamically set in index.php for better security
-
-# Handle preflight requests
-RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ index.php [QSA,L]
-
-# Security
-Header always set X-Frame-Options DENY
-Header always set X-Content-Type-Options nosniff
+# Security settings
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set X-XSS-Protection "1; mode=block"
