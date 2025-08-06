@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import { Card, Typography, Row, Col, Spin, Divider } from "antd";
 import {
   BarChart,
@@ -20,7 +21,7 @@ export default function DashboardPage() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/dashboard/today");
+      const res = await axios.get(`${API_BASE_URL}/api/dashboard/today`);
       setData(res.data);
     } catch (err) {
       console.error("Failed to load dashboard", err);

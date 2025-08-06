@@ -22,6 +22,7 @@ import {
   DownloadOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 
@@ -42,7 +43,7 @@ const PurchaseReports = () => {
   const fetchDailyReport = async (date) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5001/api/purchases/report/daily`, {
+      const response = await axios.get(`${API_BASE_URL}/api/purchases/report/daily`, {
         params: { date: date.format('YYYY-MM-DD') }
       });
       setDailyReport(response.data);
@@ -58,7 +59,7 @@ const PurchaseReports = () => {
   const fetchRangeReport = async (startDate, endDate) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5001/api/purchases/report/range`, {
+      const response = await axios.get(`${API_BASE_URL}/api/purchases/report/range`, {
         params: { 
           startDate: startDate.format('YYYY-MM-DD'),
           endDate: endDate.format('YYYY-MM-DD')
@@ -77,7 +78,7 @@ const PurchaseReports = () => {
   const fetchMonthlyReport = async (month) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5001/api/purchases/report/monthly`, {
+      const response = await axios.get(`${API_BASE_URL}/api/purchases/report/monthly`, {
         params: { 
           month: month.month() + 1,
           year: month.year()

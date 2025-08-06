@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import {
   DatePicker,
   Table,
@@ -30,7 +31,7 @@ export default function SalesHistoryPage() {
 
   const fetchBills = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/bill-history", {
+      const res = await axios.get(`${API_BASE_URL}/api/bill-history`, {
         params: {
           start: range[0]?.toISOString(),
           end: range[1]?.toISOString(),

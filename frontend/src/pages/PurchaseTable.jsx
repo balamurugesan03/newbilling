@@ -12,6 +12,7 @@ import {
   Col
 } from 'antd';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const PurchaseTable = () => {
   const [purchases, setPurchases] = useState([]);
@@ -21,7 +22,7 @@ const PurchaseTable = () => {
 
   const fetchPurchases = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/purchases');
+      const res = await axios.get(`${API_BASE_URL}/api/purchases`);
       setPurchases(res.data);
     } catch (err) {
       console.error(err);
@@ -36,10 +37,10 @@ const PurchaseTable = () => {
   const handleAddOrUpdate = async (values) => {
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/purchases/${editingId}`, values);
+        await axios.put(`${API_BASE_URL}/api/purchases/${editingId}`, values);
         message.success('Purchase updated!');
       } else {
-        await axios.post('http://localhost:5000/api/purchases/add', values);
+        await axios.post(`${API_BASE_URL}/api/purchases/add`, values);
         message.success('Purchase added!');
       }
       form.resetFields();
@@ -60,7 +61,7 @@ const PurchaseTable = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/purchases/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/purchases/${id}`);
       message.success('Purchase deleted!');
       fetchPurchases();
     } catch (err) {

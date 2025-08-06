@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table, Button, DatePicker, message } from "antd";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import dayjs from "dayjs";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -11,7 +12,7 @@ export default function CreditReport() {
 
   const fetchReport = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/bills/credit-report", {
+      const res = await axios.get(`${API_BASE_URL}/api/bills/credit-report`, {
         params: {
           month: month.month() + 1,
           year: month.year(),
@@ -29,7 +30,7 @@ export default function CreditReport() {
 
   const markPaid = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/bills/mark-paid/${id}`);
+      await axios.post(`${API_BASE_URL}/api/bills/mark-paid/${id}`);
       message.success("Marked as paid");
 
       // Update only that record in state

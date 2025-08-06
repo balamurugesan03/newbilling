@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import {
   Table,
   Button,
@@ -23,7 +24,7 @@ export default function ProductPage() {
   const [editingProduct, setEditingProduct] = useState(null);
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get(`${API_BASE_URL}/api/products`);
     setProducts(res.data);
   };
 
@@ -42,10 +43,10 @@ export default function ProductPage() {
       }
 
       if (editingProduct) {
-        await axios.put(`http://localhost:5000/api/products/${editingProduct.id}`, values);
+        await axios.put(`${API_BASE_URL}/api/products/${editingProduct.id}`, values);
         message.success("Product updated");
       } else {
-        await axios.post("http://localhost:5000/api/products", values);
+        await axios.post(`${API_BASE_URL}/api/products`, values);
         message.success("Product added");
       }
 
@@ -72,7 +73,7 @@ export default function ProductPage() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/products/${id}`);
+    await axios.delete(`${API_BASE_URL}/api/products/${id}`);
     message.success("Product deleted");
     fetchProducts();
   };

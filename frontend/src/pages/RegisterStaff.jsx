@@ -1,6 +1,7 @@
 // src/pages/RegisterStaff.jsx
 import { Form, Input, Button, Typography, message } from "antd";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 
 const { Title } = Typography;
 
@@ -9,7 +10,7 @@ export default function RegisterStaff() {
 
   const onFinish = async (values) => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", values);
+      await axios.post(`${API_BASE_URL}/api/auth/register`, values);
       message.success("Staff registered successfully!");
       form.resetFields();
     } catch (err) {

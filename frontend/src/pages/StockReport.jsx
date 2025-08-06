@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Input, Button, Typography } from 'antd';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const { Title } = Typography;
 
@@ -14,7 +15,7 @@ const StockReport = () => {
 
   const fetchStockData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/products');
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
       setProducts(res.data);
     } catch (err) {
       console.error('Error fetching stock report:', err);

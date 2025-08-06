@@ -10,6 +10,7 @@ import {
   Typography,
 } from 'antd';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -23,7 +24,7 @@ const PurchaseBilling = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/purchases');
+        const res = await axios.get(`${API_BASE_URL}/api/purchases`);
         setProducts(res.data);
       } catch (err) {
         console.error(err);
@@ -96,7 +97,7 @@ const PurchaseBilling = () => {
           reorderLevel: 10
         };
 
-        return axios.post('http://localhost:5001/api/purchases/add', purchaseData);
+        return axios.post(`${API_BASE_URL}/api/purchases/add`, purchaseData);
       });
 
       await Promise.all(savePromises);

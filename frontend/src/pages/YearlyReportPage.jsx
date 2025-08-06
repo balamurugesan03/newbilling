@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import { Select, Card, Typography } from "antd";
 import {
   BarChart,
@@ -20,7 +21,7 @@ export default function YearlyReportPage() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/yearly-report", {
+      const res = await axios.get(`${API_BASE_URL}/api/yearly-report`, {
         params: { year },
       });
 

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import {
   Form,
   Input,
@@ -29,7 +30,7 @@ export default function BillingPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
       setProducts(res.data);
     } catch (err) {
       message.error("Failed to fetch products");
@@ -53,7 +54,7 @@ export default function BillingPage() {
 
   const reduceProductStock = async (productId, quantitySold) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/products/reduce-stock", {
+      const res = await axios.post(`${API_BASE_URL}/api/products/reduce-stock`, {
         productId,
         quantitySold,
       });
@@ -136,7 +137,7 @@ export default function BillingPage() {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/bills", payload);
+      await axios.post(`${API_BASE_URL}/api/bills`, payload);
       message.success("Bill saved!");
 
       for (const item of items) {

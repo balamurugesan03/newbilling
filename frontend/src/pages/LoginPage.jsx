@@ -3,6 +3,7 @@ import { Form, Input, Button, Typography, message } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import API_BASE_URL from "../config/api";
 
 const { Title } = Typography;
 
@@ -14,7 +15,7 @@ export default function LoginPage() {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", values);
+      const res = await axios.post(`${API_BASE_URL}/api/auth/login`, values);
       login(res.data.token);
       message.success("Login successful");
       navigate("/dashboard");
