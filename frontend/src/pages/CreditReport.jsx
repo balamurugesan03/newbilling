@@ -18,7 +18,7 @@ export default function CreditReport() {
           year: month.year(),
         },
       });
-      setBills(res.data);
+      setBills(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Fetch error", err);
     }
@@ -36,7 +36,7 @@ export default function CreditReport() {
       // Update only that record in state
       setBills(prevBills =>
         prevBills.map(bill =>
-          bill.id === id ? { ...bill, isPaid: true } : bill
+          bill.id === id ? { ...bill, is_paid: 1 } : bill
         )
       );
     } catch (err) {
@@ -52,12 +52,12 @@ export default function CreditReport() {
     element.innerHTML = `
       <h2 style="text-align:center;">INVOICE</h2>
       <hr/>
-      <p><strong>Customer:</strong> ${record.customerName}</p>
+      <p><strong>Customer:</strong> ${record.customer_name}</p>
       <p><strong>Date:</strong> ${dayjs(record.date).format("DD/MM/YYYY")}</p>
-       <p><strong>Total Name:</strong> ${record.customerName}</p>
+       <p><strong>Total Name:</strong> ${record.customer_name}</p>
         <p><strong>Total Product:</strong> ${record.name}</p>
-      <p><strong>Total Amount:</strong> ₹${record.totalAmount}</p>
-      <p><strong>Status:</strong> ${record.isPaid ? "Paid" : "Unpaid"}</p>
+      <p><strong>Total Amount:</strong> ₹${record.total_amount}</p>
+      <p><strong>Status:</strong> ${record.is_paid ? "Paid" : "Unpaid"}</p>
       <hr/>
       <p style="text-align:center;">Thank you for your business!</p>
     `;
@@ -68,24 +68,24 @@ export default function CreditReport() {
 
     const pdf = new jsPDF();
     pdf.addImage(imgData, "PNG", 10, 10);
-    pdf.save(`${record.customerName}-invoice.pdf`);
+    pdf.save(`${record.customer_name}-invoice.pdf`);
 
     document.body.removeChild(element);
   };
 
   const columns = [
-    { title: "Customer", dataIndex: "customerName" },
+    { title: "Customer", dataIndex: "customer_name" },
     { title: "Date", dataIndex: "date", render: d => dayjs(d).format("DD/MM/YYYY") },
-    { title: "Amount", dataIndex: "totalAmount" },
+    { title: "Amount", dataIndex: "total_amount" },
     {
       title: "Status",
       render: (_, record) =>
-        record.isPaid ? <span style={{ color: "green" }}>Paid</span> : <span style={{ color: "red" }}>Unpaid</span>,
+        record.is_paid ? <span style={{ color: "green" }}>Paid</span> : <span style={{ color: "red" }}>Unpaid</span>,
     },
     {
       title: "Action",
       render: (_, record) =>
-        record.isPaid ? null : (
+        record.is_paid ? null : (
           <Button type="link" onClick={() => markPaid(record.id)}>Mark Paid</Button>
         ),
     },

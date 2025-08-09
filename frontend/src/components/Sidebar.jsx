@@ -48,7 +48,7 @@ function Sidebar() {
       <Menu.Item key="/purchase" icon={<DashboardOutlined />}>
         <Link to="/purchase">Item Master</Link>
       </Menu.Item>
-        <Menu.Item key="/purchase" icon={<DashboardOutlined />}>
+        <Menu.Item key="/purchase-billing" icon={<DashboardOutlined />}>
         <Link to="/purchase-billing">Purchase bill</Link>
       </Menu.Item>
       <Menu.Item key="/product" icon={<ShoppingOutlined />}>

@@ -25,7 +25,7 @@ const PurchaseBilling = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/purchases`);
-        setProducts(res.data);
+        setProducts(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);
         message.error('Failed to fetch products');
@@ -135,8 +135,8 @@ const PurchaseBilling = () => {
       <Form form={form} layout="inline" onFinish={handleAddToCart}>
         <Form.Item name="itemCode" rules={[{ required: true, message: 'Select item' }]}>
           <Select placeholder="Select Item" style={{ width: 200 }}>
-            {products.map((product) => (
-              <Option key={product.itemCode} value={product.itemCode}>
+            {(products || []).map((product, index) => (
+              <Option key={`${product.id}-${product.itemCode}-${index}`} value={product.itemCode}>
                 {product.productName}
               </Option>
             ))}

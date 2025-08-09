@@ -16,7 +16,7 @@ const StockReport = () => {
   const fetchStockData = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
-      setProducts(res.data);
+      setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Error fetching stock report:', err);
     }

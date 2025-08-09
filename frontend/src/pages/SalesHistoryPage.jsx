@@ -37,7 +37,7 @@ export default function SalesHistoryPage() {
           end: range[1]?.toISOString(),
         },
       });
-      setBills(res.data);
+      setBills(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       message.error("Failed to fetch bills");
     }
@@ -52,8 +52,8 @@ export default function SalesHistoryPage() {
 
   const exportToExcel = () => {
     const data = bills.map((bill) => ({
-      Date: dayjs(bill.createdAt).format("DD/MM/YYYY hh:mm A"),
-      Customer: bill.customerName,
+      Date: dayjs(bill.created_at).format("DD/MM/YYYY hh:mm A"),
+      Customer: bill.customer_name,
       Products: bill.items
         .map(
           (item) =>
@@ -63,12 +63,12 @@ export default function SalesHistoryPage() {
         )
         .join("\n"),
       Subtotal: Number(bill.subtotal || 0).toFixed(2),
-      GST: Number(bill.totalGST || 0).toFixed(2),
-      Total: Number(bill.totalAmount || 0).toFixed(2),
-      Received: Number(bill.receivedAmount || 0).toFixed(2),
-      PaymentMode: bill.paymentMode || "-",
+      GST: Number(bill.total_gst || 0).toFixed(2),
+      Total: Number(bill.total_amount || 0).toFixed(2),
+      Received: Number(bill.received_amount || 0).toFixed(2),
+      PaymentMode: bill.payment_mode || "-",
       Balance: (
-        (Number(bill.totalAmount) || 0) - (Number(bill.receivedAmount) || 0)
+        (Number(bill.total_amount) || 0) - (Number(bill.received_amount) || 0)
       ).toFixed(2),
     }));
 
@@ -91,21 +91,21 @@ export default function SalesHistoryPage() {
   const columns = [
     {
       title: "Date",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "created_at",
+      key: "created_at",
       render: (text) => dayjs(text).format("DD/MM/YYYY hh:mm A"),
     },
     {
       title: "Customer",
-      dataIndex: "customerName",
-      key: "customerName",
+      dataIndex: "customer_name",
+      key: "customer_name",
     },
     {
       title: "Products",
       dataIndex: "items",
       key: "items",
       render: (items) =>
-        items.map((item, i) => (
+        (items || []).map((item, i) => (
           <div key={i}>
             {item.name || 'Unknown Product'} x {item.quantity} = ₹
             {(Number(item.total) || 0).toFixed(2)} ({item.gstPercent}% GST)
@@ -120,34 +120,34 @@ export default function SalesHistoryPage() {
     },
     {
       title: "GST",
-      dataIndex: "totalGST",
-      key: "totalGST",
+      dataIndex: "total_gst",
+      key: "total_gst",
       render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Total",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
+      dataIndex: "total_amount",
+      key: "total_amount",
       render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Received",
-      dataIndex: "receivedAmount",
-      key: "receivedAmount",
+      dataIndex: "received_amount",
+      key: "received_amount",
       render: (val) => <>₹{(Number(val) || 0).toFixed(2)}</>,
     },
     {
       title: "Payment Mode",
-      dataIndex: "paymentMode",
-      key: "paymentMode",
+      dataIndex: "payment_mode",
+      key: "payment_mode",
       render: (val) => val || "-",
     },
     {
       title: "Balance",
-      key: "balanceAmount",
+      key: "balance_amount",
       render: (_, record) => {
         const balance =
-          (Number(record.totalAmount) || 0) - (Number(record.receivedAmount) || 0);
+          (Number(record.total_amount) || 0) - (Number(record.received_amount) || 0);
         return <>₹{balance.toFixed(2)}</>;
       },
     },
@@ -156,9 +156,9 @@ export default function SalesHistoryPage() {
   const dailyTotal = bills.reduce(
     (acc, bill) => {
       acc.subtotal += Number(bill.subtotal) || 0;
-      acc.gst += Number(bill.totalGST) || 0;
-      acc.total += Number(bill.totalAmount) || 0;
-      acc.received += Number(bill.receivedAmount) || 0;
+      acc.gst += Number(bill.total_gst) || 0;
+      acc.total += Number(bill.total_amount) || 0;
+      acc.received += Number(bill.received_amount) || 0;
       return acc;
     },
     { subtotal: 0, gst: 0, total: 0, received: 0 }

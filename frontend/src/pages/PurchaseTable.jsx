@@ -23,7 +23,7 @@ const PurchaseTable = () => {
   const fetchPurchases = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/purchases`);
-      setPurchases(res.data);
+      setPurchases(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
       message.error('Failed to fetch purchases.');
@@ -71,14 +71,14 @@ const PurchaseTable = () => {
   };
 
   const columns = [
-    { title: 'Product Name', dataIndex: 'productName' },
-    { title: 'Item Code', dataIndex: 'itemCode' },
-    { title: 'Brand', dataIndex: 'brand' },
-    { title: 'Unit', dataIndex: 'unit' },
-    { title: 'Opening Stock', dataIndex: 'openingStock' },
-    { title: 'Purchase Price', dataIndex: 'purchasePrice' },
-    { title: 'Sale Price', dataIndex: 'salePrice' },
-    { title: 'GST (%)', dataIndex: 'gstRate' },
+    { title: 'Product Name', dataIndex: 'productName', key: 'productName' },
+    { title: 'Item Code', dataIndex: 'itemCode', key: 'itemCode' },
+    { title: 'Brand', dataIndex: 'brand', key: 'brand' },
+    { title: 'Unit', dataIndex: 'unit', key: 'unit' },
+    { title: 'Opening Stock', dataIndex: 'openingStock', key: 'openingStock' },
+    { title: 'Purchase Price', dataIndex: 'purchasePrice', key: 'purchasePrice', render: (val) => val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00' },
+    { title: 'Sale Price', dataIndex: 'salePrice', key: 'salePrice', render: (val) => val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00' },
+    { title: 'GST (%)', dataIndex: 'gstRate', key: 'gstRate', render: (val) => val ? `${val}%` : '0%' },
     {
       title: 'Actions',
       render: (_, record) => (

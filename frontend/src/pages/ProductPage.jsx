@@ -25,7 +25,7 @@ export default function ProductPage() {
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_BASE_URL}/api/products`);
-    setProducts(res.data);
+    setProducts(Array.isArray(res.data) ? res.data : []);
   };
 
   useEffect(() => {

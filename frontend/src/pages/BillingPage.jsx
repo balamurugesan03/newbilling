@@ -31,7 +31,7 @@ export default function BillingPage() {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
-      setProducts(res.data);
+      setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       message.error("Failed to fetch products");
     }
@@ -243,7 +243,7 @@ export default function BillingPage() {
                   message.info("Resumed held bill");
                 }}
               >
-                {heldBills.map((bill, index) => (
+                {(heldBills || []).map((bill, index) => (
                   <Select.Option key={index} value={index}>
                     {bill.customerName || "Walk-in"} – {bill.items.length} items
                   </Select.Option>
@@ -268,7 +268,7 @@ export default function BillingPage() {
                 option.children.toLowerCase().includes(input.toLowerCase())
               }
             >
-              {products.map((p) => (
+              {(products || []).map((p) => (
                 <Select.Option key={p.id} value={p.id}>
                   {p.name} (Stock: {p.stockCount})
                 </Select.Option>

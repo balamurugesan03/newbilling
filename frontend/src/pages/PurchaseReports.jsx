@@ -213,7 +213,7 @@ const PurchaseReports = () => {
               <Card>
                 <Statistic
                   title="Total Value"
-                  value={dailyReport.totals.totalPurchaseValue}
+                  value={dailyReport.totals.totalValue}
                   prefix={<DollarOutlined />}
                   precision={2}
                 />
@@ -232,7 +232,7 @@ const PurchaseReports = () => {
               <Card>
                 <Statistic
                   title="Avg Purchase Price"
-                  value={dailyReport.totals.avgPurchasePrice}
+                  value={dailyReport.totals.averageValue}
                   prefix="₹"
                   precision={2}
                 />
@@ -243,17 +243,24 @@ const PurchaseReports = () => {
           <Card title={`Purchase Details - ${selectedDate.format('DD/MM/YYYY')}`}>
             <Table
               columns={purchaseColumns}
-              dataSource={dailyReport.purchases}
+              dataSource={dailyReport?.purchases || []}
               rowKey="id"
-              pagination={{ pageSize: 10 }}
+              pagination={{ 
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                pageSizeOptions: ['10', '25', '50', '100']
+              }}
               loading={loading}
+              scroll={{ x: 'max-content' }}
             />
           </Card>
 
-          {Object.keys(dailyReport.categoryStats).length > 0 && (
+          {dailyReport && Object.keys(dailyReport.categoryStats || {}).length > 0 && (
             <Card title="Category Breakdown" style={{ marginTop: 20 }}>
               <Row gutter={16}>
-                {Object.entries(dailyReport.categoryStats).map(([category, stats]) => (
+                {Object.entries(dailyReport?.categoryStats || {}).map(([category, stats]) => (
                   <Col span={8} key={category}>
                     <Card size="small">
                       <Title level={5}>{category}</Title>
@@ -342,19 +349,32 @@ const PurchaseReports = () => {
                 { title: 'Total Value', dataIndex: 'totalValue', key: 'totalValue', render: (val) => `₹${val.toFixed(2)}` },
                 { title: 'Total Stock', dataIndex: 'totalStock', key: 'totalStock' }
               ]}
-              dataSource={rangeReport.dailyReport}
+              dataSource={rangeReport?.dailyReport || []}
               rowKey="date"
-              pagination={{ pageSize: 10 }}
+              pagination={{ 
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                pageSizeOptions: ['10', '25', '50', '100']
+              }}
             />
           </Card>
 
           <Card title="All Purchases" style={{ marginTop: 20 }}>
             <Table
               columns={purchaseColumns}
-              dataSource={rangeReport.allPurchases}
+              dataSource={rangeReport?.allPurchases || []}
               rowKey="id"
-              pagination={{ pageSize: 10 }}
+              pagination={{ 
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                pageSizeOptions: ['10', '25', '50', '100']
+              }}
               loading={loading}
+              scroll={{ x: 'max-content' }}
             />
           </Card>
         </>
@@ -426,10 +446,17 @@ const PurchaseReports = () => {
           <Card title={`Monthly Summary - ${selectedMonth.format('MMMM YYYY')}`}>
             <Table
               columns={purchaseColumns}
-              dataSource={monthlyReport.purchases}
+              dataSource={monthlyReport?.purchases || []}
               rowKey="id"
-              pagination={{ pageSize: 10 }}
+              pagination={{ 
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                pageSizeOptions: ['10', '25', '50', '100']
+              }}
               loading={loading}
+              scroll={{ x: 'max-content' }}
             />
           </Card>
         </>
