@@ -1,0 +1,188 @@
+[
+    {
+        "id": 1,
+        "customer_name": "Test Customer",
+        "date": "2025-08-09",
+        "items": [
+            {
+                "productId": 1,
+                "name": "Test Product",
+                "quantity": 2,
+                "unitPrice": 100,
+                "gstPercent": 18,
+                "gstApplicable": true
+            }
+        ],
+        "subtotal": 200,
+        "total_gst": 36,
+        "total_amount": 236,
+        "received_amount": 236,
+        "balance_amount": 0,
+        "payment_mode": "Cash",
+        "is_credit": 0,
+        "is_paid": 1,
+        "created_at": "2025-08-09 07:49:39",
+        "updated_at": "2025-08-09 07:49:39"
+    },
+    {
+        "id": 2,
+        "customer_name": "Credit Customer",
+        "date": "2025-08-09",
+        "items": [
+            {
+                "productId": 1,
+                "name": "Test Product",
+                "quantity": 1,
+                "unitPrice": 100,
+                "gstPercent": 18,
+                "gstApplicable": true
+            }
+        ],
+        "subtotal": 100,
+        "total_gst": 18,
+        "total_amount": 118,
+        "received_amount": 50,
+        "balance_amount": 68,
+        "payment_mode": "Credit",
+        "is_credit": 1,
+        "is_paid": 1,
+        "created_at": "2025-08-09 07:51:02",
+        "updated_at": "2025-08-09 07:51:23",
+        "paid_date": "2025-08-09"
+    },
+    {
+        "id": 3,
+        "customer_name": "Test Customer Sales",
+        "date": "2025-08-09",
+        "items": [
+            {
+                "productId": 1,
+                "name": "Test Product",
+                "quantity": 2,
+                "unitPrice": 100,
+                "total": 200,
+                "gstApplicable": true,
+                "gstPercent": 18
+            }
+        ],
+        "subtotal": 200,
+        "total_gst": 36,
+        "total_amount": 236,
+        "received_amount": 150,
+        "balance_amount": 86,
+        "payment_mode": "Cash",
+        "is_credit": 1,
+        "is_paid": 1,
+        "created_at": "2025-08-09 07:55:21",
+        "updated_at": "2025-08-09 07:56:15",
+        "paid_date": "2025-08-09"
+    },
+    {
+        "id": 4,
+        "customer_name": "Walk-in",
+        "date": "2025-08-09T07:58:16.909Z",
+        "items": [
+            {
+                "productId": 2,
+                "name": "ivce",
+                "quantity": 222,
+                "unitPrice": 222,
+                "gstPercent": 0,
+                "gstApplicable": false,
+                "gstAmount": 0,
+                "total": 49284
+            }
+        ],
+        "subtotal": 49284,
+        "total_gst": 0,
+        "total_amount": 49284,
+        "received_amount": 50000,
+        "balance_amount": -716,
+        "payment_mode": "Cash",
+        "is_credit": 0,
+        "is_paid": 1,
+        "created_at": "2025-08-09 07:58:17",
+        "updated_at": "2025-08-09 07:58:17"
+    },
+    {
+        "id": 5,
+        "customer_name": "Walk-in",
+        "date": "2025-08-09T07:58:43.293Z",
+        "items": [
+            {
+                "productId": 2,
+                "name": "ivce",
+                "quantity": 22,
+                "unitPrice": 222,
+                "gstPercent": 0,
+                "gstApplicable": false,
+                "gstAmount": 0,
+                "total": 4884
+            }
+        ],
+        "subtotal": 4884,
+        "total_gst": 0,
+        "total_amount": 4884,
+        "received_amount": 5000,
+        "balance_amount": -116,
+        "payment_mode": "Paytm",
+        "is_credit": 0,
+        "is_paid": 1,
+        "created_at": "2025-08-09 07:58:43",
+        "updated_at": "2025-08-09 07:58:43"
+    },
+    {
+        "id": 6,
+        "customer_name": "Walk-in",
+        "date": "2025-08-09T07:59:04.225Z",
+        "items": [
+            {
+                "productId": 2,
+                "name": "ivce",
+                "quantity": 222,
+                "unitPrice": 222,
+                "gstPercent": 0,
+                "gstApplicable": false,
+                "gstAmount": 0,
+                "total": 49284
+            }
+        ],
+        "subtotal": 49284,
+        "total_gst": 0,
+        "total_amount": 49284,
+        "received_amount": 0,
+        "balance_amount": 49284,
+        "payment_mode": "Cash",
+        "is_credit": 1,
+        "is_paid": 0,
+        "created_at": "2025-08-09 07:59:04",
+        "updated_at": "2025-08-09 07:59:04"
+    },
+    {
+        "id": 7,
+        "customer_name": "Walk-in",
+        "date": "2025-08-09T08:02:26.900Z",
+        "items": [
+            {
+                "productId": 2,
+                "name": "ivce",
+                "quantity": 456,
+                "unitPrice": 222,
+                "gstPercent": 0,
+                "gstApplicable": false,
+                "gstAmount": 0,
+                "total": 101232
+            }
+        ],
+        "subtotal": 101232,
+        "total_gst": 0,
+        "total_amount": 101232,
+        "received_amount": 100000,
+        "balance_amount": 1232,
+        "payment_mode": "Cash",
+        "is_credit": 1,
+        "is_paid": 0,
+        "created_at": "2025-08-09 08:02:27",
+        "updated_at": "2025-08-09 08:02:27"
+    }
+]

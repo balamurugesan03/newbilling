@@ -56,8 +56,14 @@ class BillController
             $result = $this->billModel->create($billData);
             
             if ($result) {
-                // Reduce stock for each item
-                $this->productModel->reduceStock($input['items']);
+                // Reduce stock for each item - map productId to id for reduceStock method
+                $stockItems = array_map(function($item) {
+                    return [
+                        'id' => $item['productId'],
+                        'quantity' => $item['quantity']
+                    ];
+                }, $input['items']);
+                $this->productModel->reduceStock($stockItems);
                 
                 http_response_code(201);
                 echo json_encode(['message' => 'Bill created successfully']);

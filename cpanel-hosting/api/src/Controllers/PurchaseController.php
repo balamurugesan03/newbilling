@@ -24,8 +24,9 @@ class PurchaseController
             $result = $this->purchaseModel->create($input);
             
             if ($result) {
-                // Auto-sync with products table
-                $this->productModel->syncFromPurchase($input);
+                // Auto-sync with products table - pass mapped data
+                $mappedInput = $this->purchaseModel->mapFieldNames($input);
+                $this->productModel->syncFromPurchase($mappedInput);
                 
                 http_response_code(201);
                 echo json_encode(['message' => 'Purchase added successfully']);
