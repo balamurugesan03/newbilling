@@ -22,18 +22,64 @@ class DashboardController
             $salesData = $this->billModel->getTodaysSales();
             $products = $this->productModel->findAll();
             
+            // Get today's bills for detailed calculations
+            $todaysBills = $this->billModel->findByDateRange(date('Y-m-d'), date('Y-m-d'));
+            
+            // Calculate GST and non-GST totals
+            $totalWithGST = 0;
+            $totalWithoutGST = 0;
+            $totalGST = 0;
+            $monthlyWithGST = 0;
+            $monthlyWithoutGST = 0;
+            $monthlyGST = 0;
+            
+            // Today's calculations
+            foreach ($todaysBills as $bill) {
+                $totalWithGST += $bill['total_amount'] ?? 0;
+                $totalWithoutGST += $bill['subtotal'] ?? 0;
+                $totalGST += $bill['total_gst'] ?? 0;
+            }
+            
+            // Monthly calculations
+            $firstOfMonth = date('Y-m-01');
+            $lastOfMonth = date('Y-m-t');
+            $monthlyBills = $this->billModel->findByDateRange($firstOfMonth, $lastOfMonth);
+            
+            foreach ($monthlyBills as $bill) {
+                $monthlyWithGST += $bill['total_amount'] ?? 0;
+                $monthlyWithoutGST += $bill['subtotal'] ?? 0;
+                $monthlyGST += $bill['total_gst'] ?? 0;
+            }
+            
             // Calculate stock statistics
             $totalProducts = count($products);
-            $totalStock = array_sum(array_column($products, 'stock_count'));
-            $lowStockItems = array_filter($products, function($product) {
-                return $product['stock_count'] < 10; // Assuming 10 is low stock threshold
-            });
+            $totalStock = 0;
+            $lowStockItems = [];
+            
+            foreach ($products as $product) {
+                $stockCount = $product['stockCount'] ?? 0;
+                $totalStock += $stockCount;
+                
+                if ($stockCount < 10) {
+                    $lowStockItems[] = $product;
+                }
+            }
             
             $dashboard = [
-                'totalSales' => $salesData['total_sales'] ?? 0,
+                // Today's data
+                'totalSales' => $totalWithGST,
+                'totalWithoutGST' => $totalWithoutGST,
+                'totalGST' => $totalGST,
                 'totalBills' => $salesData['total_bills'] ?? 0,
                 'creditSales' => $salesData['credit_sales'] ?? 0,
                 'cashSales' => $salesData['cash_sales'] ?? 0,
+                
+                // Monthly data
+                'monthlySales' => $monthlyWithGST,
+                'monthlyWithoutGST' => $monthlyWithoutGST,
+                'monthlyGST' => $monthlyGST,
+                
+                // Stock data
                 'totalProducts' => $totalProducts,
                 'totalStock' => $totalStock,
                 'lowStockCount' => count($lowStockItems),

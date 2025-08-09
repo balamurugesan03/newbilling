@@ -9,131 +9,217 @@ class Bill
 {
     private $db;
     private $table = 'bills';
+    private $dataFile;
 
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
+        $this->dataFile = __DIR__ . '/../../data/bills.json';
+        $this->ensureDataFile();
+    }
+
+    private function ensureDataFile()
+    {
+        $dataDir = dirname($this->dataFile);
+        if (!is_dir($dataDir)) {
+            mkdir($dataDir, 0777, true);
+        }
+        if (!file_exists($this->dataFile)) {
+            file_put_contents($this->dataFile, json_encode([]));
+        }
+    }
+
+    private function loadData()
+    {
+        $data = file_get_contents($this->dataFile);
+        return json_decode($data, true) ?: [];
+    }
+
+    private function saveData($data)
+    {
+        file_put_contents($this->dataFile, json_encode($data, JSON_PRETTY_PRINT));
     }
 
     public function create($data)
     {
-        $sql = "INSERT INTO {$this->table} (
-            customer_name, date, items, subtotal, total_gst, total_amount,
-            received_amount, balance_amount, payment_mode, is_credit, is_paid
-        ) VALUES (
-            :customer_name, :date, :items, :subtotal, :total_gst, :total_amount,
-            :received_amount, :balance_amount, :payment_mode, :is_credit, :is_paid
-        )";
+        // Load existing data
+        $bills = $this->loadData();
         
-        $stmt = $this->db->prepare($sql);
+        // Generate new ID
+        $nextId = 1;
+        if (!empty($bills)) {
+            $ids = array_column($bills, 'id');
+            $nextId = max($ids) + 1;
+        }
         
-        // Convert items array to JSON
-        $data['items'] = json_encode($data['items']);
-        $data['is_credit'] = $data['is_credit'] ? 1 : 0;
-        $data['is_paid'] = $data['is_paid'] ? 1 : 0;
+        // Prepare bill data
+        $billData = [
+            'id' => $nextId,
+            'customer_name' => $data['customer_name'],
+            'date' => $data['date'],
+            'items' => $data['items'], // Keep as array, no need to JSON encode for file storage
+            'subtotal' => $data['subtotal'],
+            'total_gst' => $data['total_gst'],
+            'total_amount' => $data['total_amount'],
+            'received_amount' => $data['received_amount'],
+            'balance_amount' => $data['balance_amount'],
+            'payment_mode' => $data['payment_mode'],
+            'is_credit' => $data['is_credit'] ? 1 : 0,
+            'is_paid' => $data['is_paid'] ? 1 : 0,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
         
-        return $stmt->execute($data);
+        // Add to bills array
+        $bills[] = $billData;
+        
+        // Save data
+        $this->saveData($bills);
+        
+        return true;
     }
 
     public function findAll()
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY created_at DESC";
-        $stmt = $this->db->query($sql);
-        $bills = $stmt->fetchAll();
+        // Load data from file
+        $bills = $this->loadData();
         
-        // Parse JSON items
-        foreach ($bills as &$bill) {
-            $bill['items'] = json_decode($bill['items'], true);
-        }
+        // Sort by created_at DESC
+        usort($bills, function($a, $b) {
+            return strcmp($b['created_at'] ?? '', $a['created_at'] ?? '');
+        });
         
         return $bills;
     }
 
     public function findById($id)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $bill = $stmt->fetch();
-        
-        if ($bill) {
-            $bill['items'] = json_decode($bill['items'], true);
+        $bills = $this->loadData();
+        foreach ($bills as $bill) {
+            if ($bill['id'] == $id) {
+                return $bill;
+            }
         }
-        
-        return $bill;
+        return false;
     }
 
     public function findByDateRange($startDate, $endDate)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE date BETWEEN :start_date AND :end_date ORDER BY created_at DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'start_date' => $startDate,
-            'end_date' => $endDate
-        ]);
+        $bills = $this->loadData();
+        $filteredBills = array_filter($bills, function($bill) use ($startDate, $endDate) {
+            $billDate = $bill['date'] ?? '';
+            return $billDate >= $startDate && $billDate <= $endDate;
+        });
         
-        $bills = $stmt->fetchAll();
+        // Sort by created_at DESC
+        usort($filteredBills, function($a, $b) {
+            return strcmp($b['created_at'] ?? '', $a['created_at'] ?? '');
+        });
         
-        // Parse JSON items
-        foreach ($bills as &$bill) {
-            $bill['items'] = json_decode($bill['items'], true);
-        }
-        
-        return $bills;
+        return array_values($filteredBills);
     }
 
     public function getCreditReport($month, $year)
     {
-        $sql = "SELECT * FROM {$this->table} 
-                WHERE MONTH(date) = :month AND YEAR(date) = :year AND is_paid = 0
-                ORDER BY created_at DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['month' => $month, 'year' => $year]);
+        $bills = $this->loadData();
+        $creditBills = array_filter($bills, function($bill) use ($month, $year) {
+            if ($bill['is_paid'] != 0) return false;
+            
+            $billDate = $bill['date'] ?? '';
+            if (!$billDate) return false;
+            
+            $timestamp = strtotime($billDate);
+            return date('n', $timestamp) == $month && date('Y', $timestamp) == $year;
+        });
         
-        $bills = $stmt->fetchAll();
+        // Sort by created_at DESC
+        usort($creditBills, function($a, $b) {
+            return strcmp($b['created_at'] ?? '', $a['created_at'] ?? '');
+        });
         
-        // Parse JSON items
-        foreach ($bills as &$bill) {
-            $bill['items'] = json_decode($bill['items'], true);
-        }
-        
-        return $bills;
+        return array_values($creditBills);
     }
 
     public function markAsPaid($id)
     {
-        $sql = "UPDATE {$this->table} SET is_paid = 1, paid_date = CURRENT_DATE WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['id' => $id]);
+        $bills = $this->loadData();
+        $found = false;
+        
+        for ($i = 0; $i < count($bills); $i++) {
+            if ($bills[$i]['id'] == $id) {
+                $bills[$i]['is_paid'] = 1;
+                $bills[$i]['paid_date'] = date('Y-m-d');
+                $bills[$i]['updated_at'] = date('Y-m-d H:i:s');
+                $found = true;
+                break;
+            }
+        }
+        
+        if ($found) {
+            $this->saveData($bills);
+            return true;
+        }
+        
+        return false;
     }
 
     public function getTodaysSales()
     {
-        $sql = "SELECT 
-                    COUNT(*) as total_bills,
-                    SUM(total_amount) as total_sales,
-                    SUM(CASE WHEN is_credit = 1 THEN total_amount ELSE 0 END) as credit_sales,
-                    SUM(CASE WHEN is_credit = 0 THEN total_amount ELSE 0 END) as cash_sales
-                FROM {$this->table} 
-                WHERE DATE(created_at) = CURRENT_DATE";
+        $bills = $this->loadData();
+        $today = date('Y-m-d');
         
-        $stmt = $this->db->query($sql);
-        return $stmt->fetch();
+        $todaysBills = array_filter($bills, function($bill) use ($today) {
+            return substr($bill['created_at'] ?? '', 0, 10) === $today;
+        });
+        
+        $totalBills = count($todaysBills);
+        $totalSales = array_sum(array_column($todaysBills, 'total_amount'));
+        $creditSales = 0;
+        $cashSales = 0;
+        
+        foreach ($todaysBills as $bill) {
+            if ($bill['is_credit']) {
+                $creditSales += $bill['total_amount'];
+            } else {
+                $cashSales += $bill['total_amount'];
+            }
+        }
+        
+        return [
+            'total_bills' => $totalBills,
+            'total_sales' => $totalSales,
+            'credit_sales' => $creditSales,
+            'cash_sales' => $cashSales
+        ];
     }
 
     public function getYearlySales($year)
     {
-        $sql = "SELECT 
-                    MONTH(date) as month,
-                    SUM(total_amount) as total_sales,
-                    COUNT(*) as total_bills
-                FROM {$this->table} 
-                WHERE YEAR(date) = :year
-                GROUP BY MONTH(date)
-                ORDER BY month";
+        $bills = $this->loadData();
+        $monthlyData = [];
         
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['year' => $year]);
-        return $stmt->fetchAll();
+        // Initialize all months
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlyData[$i] = [
+                'month' => $i,
+                'total_sales' => 0,
+                'total_bills' => 0
+            ];
+        }
+        
+        // Process bills for the year
+        foreach ($bills as $bill) {
+            $billDate = $bill['date'] ?? '';
+            if (!$billDate) continue;
+            
+            $timestamp = strtotime($billDate);
+            if (date('Y', $timestamp) == $year) {
+                $month = (int)date('n', $timestamp);
+                $monthlyData[$month]['total_sales'] += $bill['total_amount'] ?? 0;
+                $monthlyData[$month]['total_bills']++;
+            }
+        }
+        
+        return array_values($monthlyData);
     }
 }
